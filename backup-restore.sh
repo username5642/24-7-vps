@@ -1,12 +1,13 @@
 #!/bin/bash
 # backup-restore.sh
-# Backup / Restore VPS data between runs
+# Simple backup/restore system for VPS session
 
 BACKUP_DIR="backup_data"
 
 if [ "$1" == "backup" ]; then
     echo "[*] Backing up VPS data..."
     mkdir -p $BACKUP_DIR
+    # Example: backup /root and /etc (customize as needed)
     sudo tar -czf $BACKUP_DIR/vps_backup_$(date +%s).tar.gz /root /etc || true
     echo "[*] Backup complete."
 
