@@ -1,14 +1,18 @@
-name: VPS Session [WORK]
+name: VPS Session [ UPDATED ]
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types: [auto-restart]
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   vps:
     runs-on: ubuntu-22.04
-    timeout-minutes: 360  # 6 hours
+    timeout-minutes: 360  # max 6 hours
 
     steps:
       - name: Checkout Repo
@@ -33,6 +37,9 @@ jobs:
           bash backup-restore.sh backup
 
       - name: Trigger Auto Restart
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          echo "Triggering auto-restart..."
-          bash auto-start.yml
+          chmod +x auto-start.yml
+          ./auto-start.yml
