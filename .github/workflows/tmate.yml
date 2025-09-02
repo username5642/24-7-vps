@@ -1,4 +1,4 @@
-name: VPS AutoStart [Full Backup]
+name: VPS Session [LEMON NODES]
 
 on:
   workflow_dispatch:
@@ -17,10 +17,10 @@ jobs:
         with:
           limit-access-to-actor: true
 
-      - name: 🕒 Sleep until 5:57
+      - name: 🕒 Sleep until 5:57:02
         run: |
-          echo "Sleeping until 5:57 (5 hours 57 minutes)..."
-          sleep $(( (5 * 60 + 57) * 60 ))
+          echo "Sleeping until 5:57:02 (5 hours 57 minutes 2 seconds)..."
+          sleep $(( (5*3600 + 57*60 + 2) ))
 
       - name: 📦 Full VPS Backup
         run: |
@@ -33,6 +33,7 @@ jobs:
                    --exclude=/run/* \
                    --exclude=/mnt/* \
                    --exclude=/var/lib/docker/* \
+                   --exclude=/home/runner/work/* \
                    -czf /tmp/vps-backup/full-vps-backup.tar.gz /
 
       - name: ⬆️ Upload Backup
