@@ -1,23 +1,17 @@
 #!/bin/bash
-# backup-restore.sh
-# Backup & restore VPS data
+set -e
 
-BACKUP_DIR="backup_data"
+MODE=$1
 
-if [ "$1" == "backup" ]; then
-    echo "[*] Backing up VPS data..."
-    mkdir -p $BACKUP_DIR
-    sudo tar -czf $BACKUP_DIR/vps_backup_latest.tar.gz /root /etc || true
-    echo "[*] Backup complete."
+if [[ "$MODE" == "backup" ]]; then
+    echo "[INFO] Creating backup..."
+    tar -czf backup.tar.gz /home/runner/work || true
+    echo "[INFO] Backup created: backup.tar.gz"
+fi
 
-elif [ "$1" == "restore" ]; then
-    echo "[*] Restoring latest backup..."
-    if [ -f "$BACKUP_DIR/vps_backup_latest.tar.gz" ]; then
-        sudo tar -xzf "$BACKUP_DIR/vps_backup_latest.tar.gz" -C /
-        echo "[*] Restore complete."
-    else
-        echo "[!] No backup found, skipping restore."
-    fi
-else
-    echo "Usage: $0 {backup|restore}"
+if [[ "$MODE" == "restore" ]]; then
+    echo "[INFO] Restoring backup..."
+    mkdir -p /home/runner/work
+    tar -xzf backup.tar.gz -C / || true
+    echo "[INFO] Backup restored!"
 fi
