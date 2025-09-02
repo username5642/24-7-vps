@@ -1,4 +1,4 @@
-name: VPS Session [LEMON NODES || VPS || ]
+name: VPS Session [LEMON NODES UPDATED ]
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 jobs:
   start-vps:
     runs-on: ubuntu-22.04
-    timeout-minutes: 360   # 6 hours max
+    timeout-minutes: 360
 
     steps:
       - name: ⬇️ Checkout
@@ -19,24 +19,15 @@ jobs:
 
       - name: 🕒 Sleep until 5:57:02
         run: |
-          echo "Sleeping until 5:57:02 (5 hours 57 minutes 2 seconds)..."
-          sleep $(( (5*3600 + 57*60 + 2) ))
+          echo "Sleeping 5 hours 57 minutes 2 seconds..."
+          sleep $((5*3600 + 57*60 + 2))
 
-      - name: 📦 Full VPS Backup
+      - name: 📦 Run Backup Script
         run: |
-          mkdir -p /tmp/vps-backup
-          echo "Creating full system backup..."
-          sudo tar --exclude=/tmp/* \
-                   --exclude=/proc/* \
-                   --exclude=/sys/* \
-                   --exclude=/dev/* \
-                   --exclude=/run/* \
-                   --exclude=/mnt/* \
-                   --exclude=/var/lib/docker/* \
-                   --exclude=/home/runner/work/* \
-                   -czf /tmp/vps-backup/full-vps-backup.tar.gz /
+          chmod +x ./backup-restore.sh
+          ./backup-restore.sh backup
 
-      - name: ⬆️ Upload Backup
+      - name: ⬆️ Upload Backup Artifact
         uses: actions/upload-artifact@v4
         with:
           name: full-vps-backup
@@ -44,5 +35,7 @@ jobs:
 
       - name: 🔄 Trigger Auto-Restart
         run: |
-          chmod +x ./trigger-workflow.sh
-          ./trigger-workflow.sh
+          chmod +x ./auto-start.yml
+          ./auto-start.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
