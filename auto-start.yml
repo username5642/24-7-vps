@@ -1,10 +1,18 @@
-#!/bin/bash
-# auto-start.yml
-# Triggers VPS workflow (tmate.yml) again
+name: Auto Restart VPS
 
-echo "[*] Restarting VPS workflow..."
-curl -X POST \
-  -H "Accept: application/vnd.github+json" \
-  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-  https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/tmate.yml/dispatches \
-  -d '{"ref":"main"}'
+on:
+  workflow_run:
+    workflows: ["VPS Session [LEMON NODES]"]
+    types:
+      - completed
+
+jobs:
+  restart:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🔄 Restart workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: "tmate.yml"
+          repo: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
