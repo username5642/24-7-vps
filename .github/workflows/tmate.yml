@@ -12,19 +12,18 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      - name: 🔑 Ensure SSH Key Exists
-        run: |
-          mkdir -p ~/.ssh
-          if [[ ! -f ~/.ssh/id_ed25519 ]]; then
-            ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N "" -C "github-action"
-          fi
-          echo "[INFO] SSH key ready."
-          cat ~/.ssh/id_ed25519.pub
-
       - name: 🚀 Start VPS with tmate
         uses: mxschmitt/action-tmate@v3
         with:
-          limit-access-to-actor: true
+          tmate_ssh: true
+          tmate_web: true
+          limit-access-to-actor: false
+
+      - name: 🔍 Show tmate session URLs
+        run: |
+          echo "[INFO] tmate SSH & Web URLs:"
+          echo "SSH: $TMATE_SSH"
+          echo "Web: $TMATE_WEB"
 
       - name: 🕒 Sleep 5h57m2s
         run: |
