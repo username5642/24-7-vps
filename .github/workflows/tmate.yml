@@ -1,44 +1,49 @@
-name: VPS Session [ LEMON NODES ]
+name: VPS AutoStart [Full Backup]
 
 on:
-  workflow_dispatch:          # ✅ Manual start button
-  repository_dispatch:        # ✅ Auto-restart trigger
-    types: [create-vps]
+  workflow_dispatch:
 
 jobs:
   start-vps:
     runs-on: ubuntu-22.04
-    timeout-minutes: 360  # 6 hours max
+    timeout-minutes: 360   # 6 hours max
 
     steps:
       - name: ⬇️ Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # ✅ Restore backup if exists
-      - name: 🔄 Restore backup
-        run: |
-          if [ -f backup.tar.gz ]; then
-            echo "Restoring backup..."
-            tar -xzf backup.tar.gz -C $HOME
-          else
-            echo "No backup found, starting fresh..."
-          fi
-
-      - name: ⚙️ Set up tmate VPS session
+      - name: 🚀 Start VPS with tmate
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
 
-      - name: 💤 Sleep until 5h57m
-        run: sleep $((357 * 60))   # 5 hours 57 minutes
-
-      - name: 🗄️ Create backup before shutdown
+      - name: 🕒 Sleep until 5:57
         run: |
-          tar -czf backup.tar.gz -C $HOME .
-          echo "Backup created successfully!"
+          echo "Sleeping until 5:57 (5 hours 57 minutes)..."
+          sleep $(( (5 * 60 + 57) * 60 ))
 
-      - name: 📦 Upload backup
-        uses: actions/upload-artifact@v3
+      - name: 📦 Full VPS Backup
+        run: |
+          mkdir -p /tmp/vps-backup
+          echo "Creating full system backup..."
+          sudo tar --exclude=/tmp/* \
+                   --exclude=/proc/* \
+                   --exclude=/sys/* \
+                   --exclude=/dev/* \
+                   --exclude=/run/* \
+                   --exclude=/mnt/* \
+                   --exclude=/var/lib/docker/* \
+                   -czf /tmp/vps-backup/full-vps-backup.tar.gz /
+
+      - name: ⬆️ Upload Backup
+        uses: actions/upload-artifact@v4
         with:
-          name: vps-backup
-          path: backup.tar.gz
+          name: full-vps-backup
+          path: /tmp/vps-backup/full-vps-backup.tar.gz
+
+      - name: 🔄 Re-run VPS Workflow
+        run: |
+          echo "Re-triggering workflow..."
+          gh workflow run tmate.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
