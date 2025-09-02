@@ -1,4 +1,4 @@
-name: VPS Session [LEMON NODES]
+name: VPS Session [LEMON NODES || VPS || ]
 
 on:
   workflow_dispatch:
@@ -42,9 +42,7 @@ jobs:
           name: full-vps-backup
           path: /tmp/vps-backup/full-vps-backup.tar.gz
 
-      - name: 🔄 Re-run VPS Workflow
+      - name: 🔄 Trigger Auto-Restart
         run: |
-          echo "Re-triggering workflow..."
-          gh workflow run tmate.yml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          chmod +x ./trigger-workflow.sh
+          ./trigger-workflow.sh
