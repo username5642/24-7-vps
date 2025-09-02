@@ -1,10 +1,10 @@
-name: VPS Session [LEMON NODES UPDATED ]
+name: VPS Backup Workflow
 
 on:
   workflow_dispatch:
 
 jobs:
-  start-vps:
+  vps-backup:
     runs-on: ubuntu-22.04
     timeout-minutes: 360
 
@@ -12,14 +12,9 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v4
 
-      - name: 🚀 Start VPS with tmate
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-
-      - name: 🕒 Sleep until 5:57:02
+      - name: 🕒 Sleep 5h57m2s
         run: |
-          echo "Sleeping 5 hours 57 minutes 2 seconds..."
+          echo "Sleeping for 5 hours 57 minutes 2 seconds..."
           sleep $((5*3600 + 57*60 + 2))
 
       - name: 📦 Run Backup Script
